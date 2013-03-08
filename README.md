@@ -1,4 +1,4 @@
-vtex-giftlist
-=============
+VTEX GIFT LIST
+==============
 
-Vtex Gift List // Pop up para página de produtos
+Vtex Gift List apresenta em um pop up (vtex_popup.js) a lista de desejos (whishlist) com opção de adicionar nova lista.
