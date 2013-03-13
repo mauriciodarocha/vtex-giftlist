@@ -5,9 +5,10 @@
 
       var vtex_giftlist_opts = $.extend({
         form: true,
-        message: ".vgl-list-msg",
-        log_message: "Clique aqui para logar.",
-        label_text: "Lista:",
+        class_message: ".vgl-list-msg",
+        login: "Clique aqui para logar.",
+        label: "Lista:",
+        class_alert: ".vgl-alert-msg",
         or: "<span>ou</span>"
       }, options);
 
@@ -87,8 +88,9 @@
               jQuery(vtex_giftlist.list_button).click(function()
               {
                 var name = jQuery(vtex_giftlist.input).val();
-                name = name.replace();
-                vtex_giftlist.add_list(name);
+                name = name.replace(/^\s*([\S\s]*?)\s*$/, '$1');
+                if(name!=="")
+                  vtex_giftlist.add_list(name);
               });
             }
           }
@@ -144,14 +146,14 @@
         {
           error: function () 
           {
-            jQuery(vtex_giftlist_opts.message).removeClass("error").text("");
+            jQuery(vtex_giftlist_opts.class_alert).removeClass("error").text("");
           }
         },
         show:
         {
           error: function ()
           {
-            jQuery(vtex_giftlist_opts.message).addClass("error").text("Nome de lista já existente.");
+            jQuery(vtex_giftlist_opts.class_alert).addClass("error").text("Nome de lista já existente.");
           },
           lists: function()
           {
@@ -159,18 +161,27 @@
           },
           form: function ()
           {
+            var list = true;
             var div = jQuery("<div>").addClass("vgl-container");
-            jQuery(div).append(vtex_giftlist.data);
-            if(!!vtex_giftlist_opts.or)
+            if(jQuery(vtex_giftlist.data).find("ul").length<=0)
+            {
+              list = false;
+              vtex_giftlist.data="<p class='vgl-nolist'>Adicione uma lista abaixo.</p>";
+            }
+
+            jQuery(div).html(vtex_giftlist.data);
+
+            if(!!vtex_giftlist_opts.or&&list)
             {
               var or = jQuery("<div>").addClass("vgl-or").html(vtex_giftlist_opts.or);
               jQuery(div).append(or);
             }
+
             if(vtex_giftlist_opts.form)
             {
               var form = jQuery("<div>").addClass("vgl-form");
-              var label = jQuery("<label>").addClass("vgl-list-label").text(vtex_giftlist_opts.label_text);
-              var span = jQuery("<span>").addClass(vtex_giftlist_opts.message.substr(1));
+              var label = jQuery("<label>").addClass("vgl-list-label").text(vtex_giftlist_opts.label);
+              var span = jQuery("<span>").addClass(vtex_giftlist_opts.class_alert.substr(1));
               var input = jQuery("<input>",{type:"text"}).addClass(vtex_giftlist.input.substr(1));
               var button = jQuery("<a>").addClass(vtex_giftlist.list_button.substr(1)).text("Criar lista");
               jQuery(label).append(span);
@@ -183,12 +194,13 @@
           },
           not_logged: function()
           {
-            var _url = document.location.pathname;
-            var _div = jQuery("<div>").addClass("not_logged");
-            var _message = jQuery("<p>").addClass("message").text(vtex_giftlist_opts.message);
-            var _a = jQuery("<a>",{ href: "/Site/Login.aspx?ReturnUrl="+_url }).text(vtex_giftlist_opts.log_message);
-            jQuery(_div).append(_message).append(_a);
-            jQuery(_div).vtex_popup({title:"Adicione a lista"});
+            var url = document.location.pathname;
+            var div = jQuery("<div>").addClass("not_logged");
+            var message = jQuery("<p>").addClass(vtex_giftlist_opts.class_message.substr(1));
+            var a = jQuery("<a>",{ href: "/Site/Login.aspx?ReturnUrl="+url }).text(vtex_giftlist_opts.login);
+            jQuery(message).append(a);
+            jQuery(div).append(message);
+            jQuery(div).vtex_popup({title:"Adicione a lista"});
           }
         },
         logged: function()
